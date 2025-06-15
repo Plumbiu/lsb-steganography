@@ -4,13 +4,16 @@
 
 <p>
   <p>
-    源图片 -----> 加密图片
+    源图片：
   </p>
   <img width="200" src="./__test__/fixture.jpg" />
+  <p>
+    加密图片：
+  </p>
   <img width="200" src="./__test__/fixture.png" />
 </p>
 
-运行 `lsb decode "./__test__/fixture.png" --log`，终端显示 [pnpm-lock.yaml](./pnpm-lock.yaml) 数据。
+运行 `lsb decode "./__test__/fixture.png" --log` 解析加密图片，终端显示 [pnpm-lock.yaml](./pnpm-lock.yaml) 数据。
 
 # 安装
 
