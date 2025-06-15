@@ -3,6 +3,9 @@
 通过图片隐藏数据。
 
 <p>
+  <p>
+    源图片 -----> 加密图片
+  </p>
   <img width="200" src="./__test__/fixture.jpg" />
   <img width="200" src="./__test__/fixture.png" />
 </p>
