@@ -7,7 +7,6 @@ export default [
   }),
   defineConfig({
     entry: './src/cli.ts',
-    external: [/\.\/lib/],
     outputOptions: {
       banner: '#! /usr/bin/env node',
     },

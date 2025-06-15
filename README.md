@@ -1,6 +1,13 @@
 # lsb-steganography
 
-通过图片隐藏数据
+通过图片隐藏数据。
+
+<p>
+  <img width="200" src="./__test__/fixture.jpg" />
+  <img width="200" src="./__test__/fixture.png" />
+</p>
+
+运行 `lsb decode "./__test__/fixture.png" --log`，终端显示 [pnpm-lock.yaml](./pnpm-lock.yaml) 数据。
 
 # 安装
 
