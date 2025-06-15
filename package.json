@@ -1,0 +1,39 @@
+{
+  "name": "lsb-steganography",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "A coomand-line tool for encoding/decoding data via image.",
+  "main": "./dist/lib.js",
+  "types": "./dist/lib.d.ts",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "bin": {
+    "lsb": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plumbiu/lsb-steganography.git"
+  },
+  "keywords": [
+    "lsb",
+    "encode",
+    "decode",
+    "image"
+  ],
+  "author": "Plumbiu",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "22",
+    "tsdown": "^0.12.7",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.3"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "sharp": "^0.34.2"
+  }
+}
