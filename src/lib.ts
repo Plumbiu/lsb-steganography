@@ -2,7 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import { Jimp, type JimpInstance } from 'jimp'
 
 interface EncodeOptions {
-  input?: string
+  input?: string | ArrayBuffer
 }
 
 const MASK_0F = 0x0f
@@ -10,12 +10,25 @@ const MASK_F0 = 0xf0
 const MASK_FF = 0xff
 
 export async function encode(str: string, { input }: EncodeOptions) {
-  const buffer = Buffer.from(str)
+  const enc = new TextEncoder()
+  const buffer = enc.encode(str)
   let image: JimpInstance
   let width = 0
   let height = 0
+
+  async function getJimpInstance() {
+    if (typeof input === 'string') {
+      return await Jimp.read(input)
+    }
+    if (input instanceof ArrayBuffer) {
+      return Jimp.fromBuffer(input)
+    }
+  }
   if (input) {
-    const jimp = await Jimp.read(input)
+    const jimp = await getJimpInstance()
+    if (!jimp) {
+      throw new Error('Invalid input')
+    }
     const size = jimp.width * jimp.height * 4
     const pixelApset = Math.sqrt(size / (buffer.length * 2))
     width = Math.ceil(jimp.width / pixelApset)
