@@ -1,14 +1,13 @@
 {
-  "name": "lsb-steganography-monorepo",
-  "version": "1.0.0",
+  "name": "lsb-steganography",
+  "version": "0.1.0",
   "type": "module",
   "description": "A coomand-line tool for encoding/decoding data via image.",
   "main": "./dist/lib.js",
   "types": "./dist/lib.d.ts",
-  "homepage": "https://github.com/plumbiu/lsb-steganography",
   "scripts": {
-    "build": "pnpm -r build",
-    "release": "pnpm -r release"
+    "build": "tsdown",
+    "release": "bumpp && pnpm publish"
   },
   "bin": {
     "lsb": "./dist/cli.js"
@@ -28,12 +27,6 @@
   ],
   "author": "Plumbiu",
   "license": "MIT",
-  "devDependencies": {
-    "@types/node": "22",
-    "tsdown": "^0.12.7",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.3"
-  },
   "dependencies": {
     "cac": "^6.7.14",
     "jimp": "^1.6.0"
