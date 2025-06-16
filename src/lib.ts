@@ -10,8 +10,8 @@ const MASK_F0 = 0xf0
 const MASK_FF = 0xff
 
 export async function encode(str: string, { input }: EncodeOptions) {
-  const enc = new TextEncoder()
-  const buffer = enc.encode(str)
+  const textEncoder = new TextEncoder()
+  const buffer = textEncoder.encode(str)
   let image: JimpInstance
   let width = 0
   let height = 0
@@ -43,7 +43,7 @@ export async function encode(str: string, { input }: EncodeOptions) {
     width = Math.ceil(Math.sqrt(buffer.length) / Sqrt3Div2)
     height = width
     image = new Jimp({
-      color: 0xf0f0f0,
+      color: 0xf0f0f0f0,
       width,
       height,
     })
@@ -69,13 +69,14 @@ export async function encode(str: string, { input }: EncodeOptions) {
 }
 
 export async function decode(imagePath: string) {
+  const textDecoder = new TextDecoder('utf-8')
   const jimpInput = await Jimp.read(imagePath)
   const buffer = jimpInput.bitmap.data
-  let data = ''
-  for (let i = 0; i < buffer.length; i++) {
-    data += buffer[i].toString(16)[1]
+  const array = new Uint8Array(buffer.length)
+  for (let i = 0; i < buffer.length; i += 2) {
+    array[i] = ((buffer[i] & MASK_0F) << 4) + (buffer[i + 1] & MASK_0F)
   }
-  data = Buffer.from(data, 'hex').toString('utf-8')
+  const data = textDecoder.decode(array)
   return {
     data,
     writeFile(output: string) {
