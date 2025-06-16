@@ -1,6 +1,6 @@
 {
   "name": "lsb-steganography",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "type": "module",
   "description": "A coomand-line tool for encoding/decoding data via image.",
   "main": "./dist/lib.js",
