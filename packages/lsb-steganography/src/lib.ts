@@ -1,8 +1,10 @@
 import { writeFile } from 'node:fs/promises'
 import { Jimp, type JimpInstance } from 'jimp'
 
+type Input = string | ArrayBuffer
+
 interface EncodeOptions {
-  input?: string | ArrayBuffer
+  input?: Input
 }
 
 const MASK_0F = 0x0f
@@ -68,9 +70,12 @@ export async function encode(str: string, { input }: EncodeOptions) {
   }
 }
 
-export async function decode(imagePath: string) {
+export async function decode(input: Input) {
   const textDecoder = new TextDecoder('utf-8')
-  const jimpInput = await Jimp.read(imagePath)
+  const jimpInput =
+    typeof input === 'string'
+      ? await Jimp.read(input)
+      : await Jimp.fromBuffer(input)
   const buffer = jimpInput.bitmap.data
   const array = new Uint8Array(buffer.length)
   for (let i = 0; i < buffer.length; i += 2) {
