@@ -8,7 +8,10 @@
   "homepage": "https://github.com/plumbiu/lsb-steganography",
   "scripts": {
     "build": "pnpm -r build",
-    "release": "pnpm -r release"
+    "release": "pnpm -r release",
+    "dev:web": "pnpm --filter web dev",
+    "dev:core": "pnpm --filter lsb-steganography dev",
+    "dev": "npm-run-all --parallel dev:*"
   },
   "bin": {
     "lsb": "./dist/cli.js"
@@ -30,6 +33,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "22",
+    "npm-run-all2": "^8.0.4",
     "tsdown": "^0.12.7",
     "typescript": "^5.8.3",
     "vitest": "^3.2.3"
