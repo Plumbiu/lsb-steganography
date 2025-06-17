@@ -4,18 +4,25 @@ import styles from './App.module.css'
 import { Button, Image, Radio } from 'antd'
 import InputFile from './components/InputFile'
 import TextArea from 'antd/es/input/TextArea'
-import { arrayBufferToBlobUrl, isArrayBuffer } from './utils'
+import {
+  arrayBufferToBlobUrl,
+  getDownloadName,
+  getFileType,
+  isArrayBuffer,
+} from './utils'
 import Link from 'antd/es/typography/Link'
+import { Jimp } from 'jimp'
 
 function App() {
-  const [inputType, setInputType] = useState<'text' | 'file'>('text')
-  const [decodedType, setDecodedType] = useState<'text' | 'url'>('text')
+  const [inputType, setInputType] = useState<'text' | 'file'>('file')
+  const [decodedType, setDecodedType] = useState<'text' | 'url'>('url')
   const [originBlobUrl, setOriginBlobUrl] = useState('')
   const [encodedBlobUrl, setEncodedBlobUrl] = useState('')
   const [decodedData, setDecodedData] = useState('')
+  const [fileExt, setFileExt] = useState('')
 
-  const originArrayBuffer = useRef<ArrayBuffer | null>(null)
-  const encodedOriginArrayBuffer = useRef<ArrayBuffer | null>(null)
+  const originArrayBufferRef = useRef<ArrayBuffer | null>(null)
+  const encodedOriginArrayBufferRef = useRef<ArrayBuffer | null>(null)
   const inputRef = useRef<ArrayBuffer | string | null>(null)
 
   const selectOriginImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,9 +31,34 @@ function App() {
       const reader = new FileReader()
       reader.onload = async (e) => {
         if (isArrayBuffer(e.target?.result)) {
+          if (originBlobUrl) {
+            URL.revokeObjectURL(originBlobUrl)
+          }
           const blobUrl = await arrayBufferToBlobUrl(e.target.result)
           setOriginBlobUrl(blobUrl)
-          originArrayBuffer.current = e.target.result
+          originArrayBufferRef.current = e.target.result
+        }
+      }
+      reader.readAsArrayBuffer(file)
+    }
+  }
+
+  const selectEncodedImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const result = e.target?.result
+        if (isArrayBuffer(result)) {
+          const image = await Jimp.fromBuffer(result)
+          if (originBlobUrl) {
+            URL.revokeObjectURL(originBlobUrl)
+          }
+          encodedOriginArrayBufferRef.current = await image.getBuffer(
+            'image/png',
+          )
+          const blobUrl = await arrayBufferToBlobUrl(result)
+          setEncodedBlobUrl(blobUrl)
         }
       }
       reader.readAsArrayBuffer(file)
@@ -53,28 +85,34 @@ function App() {
   }
 
   async function handleEncode() {
-    if (inputRef.current && originArrayBuffer.current) {
+    if (inputRef.current && originArrayBufferRef.current) {
       const { image } = await encode(inputRef.current, {
-        input: originArrayBuffer.current,
+        input: originArrayBufferRef.current,
       })
-      encodedOriginArrayBuffer.current = await image.getBuffer('image/png')
-      const blobUrl = await arrayBufferToBlobUrl(encodedOriginArrayBuffer.current)
+      encodedOriginArrayBufferRef.current = await image.getBuffer('image/png')
+      if (encodedBlobUrl) {
+        URL.revokeObjectURL(encodedBlobUrl)
+      }
+      const blobUrl = await arrayBufferToBlobUrl(
+        encodedOriginArrayBufferRef.current,
+      )
       setEncodedBlobUrl(blobUrl)
     }
   }
 
   async function handleDecode() {
-    if (encodedOriginArrayBuffer.current) {
-      const { data } = await decode(encodedOriginArrayBuffer.current)
+    if (encodedOriginArrayBufferRef.current) {
+      const { data } = await decode(encodedOriginArrayBufferRef.current)
       if (decodedType === 'text') {
         const textDecoder = new TextDecoder('utf-8')
         const text = textDecoder.decode(data)
+        setFileExt('.txt')
         setDecodedData(text)
       } else if (decodedType === 'url') {
-        const blob = new Blob([data.buffer], {
-          type: 'application/octet-stream',
-        })
-        const url = URL.createObjectURL(blob)
+        const url = await arrayBufferToBlobUrl(data)
+        const { ext } = await getFileType(data)
+        console.log({ ext })
+        setFileExt('.' + ext)
         setDecodedData(url)
       }
     }
@@ -84,23 +122,13 @@ function App() {
     <div className={styles.app}>
       <div className={styles.encodeContainer}>
         <h1>Encode</h1>
-        <div className={styles.imageContainer}>
-          <div>
-            {originBlobUrl && (
-              <>
-                <div>源图片</div>
-                <Image width={360} src={originBlobUrl} />
-              </>
-            )}
-          </div>
-          <div>
-            {encodedBlobUrl && (
-              <>
-                <div>加密图片</div>
-                <Image width={360} src={encodedBlobUrl} />
-              </>
-            )}
-          </div>
+        <div>
+          {originBlobUrl && (
+            <>
+              <h3>源图片</h3>
+              <Image width={360} src={originBlobUrl} />
+            </>
+          )}
         </div>
         <div>
           <h3>选择源图片</h3>
@@ -142,11 +170,7 @@ function App() {
       </div>
       <div className={styles.decodeContainer}>
         <h2>Decode</h2>
-        <div>
-          <Button type="primary" onClick={handleDecode}>
-            Decode
-          </Button>
-        </div>
+
         <div>
           <h3>选择Decode类型</h3>
           <Radio.Group
@@ -157,16 +181,41 @@ function App() {
             <Radio value="url">下载</Radio>
           </Radio.Group>
         </div>
+        <div>
+          {encodedBlobUrl && (
+            <>
+              <h3>加密图片</h3>
+              <Image width={360} src={encodedBlobUrl} />
+            </>
+          )}
+        </div>
+        <div>
+          <h3>选择加密文件</h3>
+          <InputFile
+            placeholder="上传加密数据文件"
+            onChange={selectEncodedImage}
+          />
+        </div>
         {decodedData && (
           <div>
             {decodedType === 'url' && (
-              <Link href={decodedData} target="_blank">
+              <Link
+                href={decodedData}
+                download={`${getDownloadName(decodedData)}${fileExt}`}
+                target="_blank"
+              >
                 点击链接访问
               </Link>
             )}
             {decodedType === 'text' && <pre>{decodedData}</pre>}
           </div>
         )}
+
+        <div>
+          <Button type="primary" onClick={handleDecode}>
+            Decode
+          </Button>
+        </div>
       </div>
     </div>
   )

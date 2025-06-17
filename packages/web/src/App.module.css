@@ -8,15 +8,15 @@
   max-width: 800px;
 }
 
-.app > div {
+.app>div {
   box-sizing: border-box;
   width: 50%;
   padding: 24px;
   min-height: 100vh;
 }
 
-.app > div > h3 {
-  color: #333;
+.app h3 {
+  color: #303030;
   margin-bottom: 16px;
 }
 
@@ -29,7 +29,8 @@
   border-right: 1px solid #ccc;
 }
 
-.encodeContainer > div {
+.encodeContainer>div,
+.decodeContainer>div {
   border-radius: 8px;
   margin-bottom: 16px;
 }
