@@ -1,0 +1,19 @@
+.encodeContainer {
+
+}
+
+.imageContainer {
+  display: flex;
+  gap: 24px;
+}
+
+.encodeContainer > div {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px dashed #ccc;
+}
+
+.inputDataContainer {
+  margin: 8px 0;
+}
