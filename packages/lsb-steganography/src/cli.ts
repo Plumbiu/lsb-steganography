@@ -1,6 +1,6 @@
 import cac from 'cac'
 import { encode, decode } from './lib'
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 
 const cli = cac('lsb')
 
@@ -18,9 +18,9 @@ cli
       if (!data) {
         throw new Error('加密数据不存在')
       }
-      const { writeFile } = await encode(data, { input })
+      const { image } = await encode(data, { input })
 
-      await writeFile(output)
+      await image.write(`${output}.png`)
     } catch (error) {
       console.log(error)
     }
@@ -32,11 +32,13 @@ cli
   .option('--log', '仅打印，不保存源数据')
   .action(async (input, options) => {
     const { output, log } = options
-    const { writeFile, data } = await decode(input)
+    const {data } = await decode(input)
     if (log) {
       console.log(data)
     } else {
-      await writeFile(output)
+      await writeFile(output, data, {
+        encoding: 'utf-8',
+      })
     }
   })
 

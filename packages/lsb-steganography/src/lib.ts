@@ -1,4 +1,3 @@
-import { writeFile } from 'node:fs/promises'
 import { Jimp, type JimpInstance } from 'jimp'
 
 type Input = string | ArrayBuffer
@@ -11,10 +10,15 @@ const MASK_0F = 0x0f
 const MASK_F0 = 0xf0
 const MASK_FF = 0xff
 
-export async function encode(str: string, { input }: EncodeOptions) {
+export async function encode(
+  str: Input,
+  { input }: EncodeOptions,
+): Promise<{
+  image: JimpInstance
+}> {
   const textEncoder = new TextEncoder()
-  const buffer = textEncoder.encode(str)
-  let image: JimpInstance
+  const buffer = typeof str === 'string' ? textEncoder.encode(str) : new Uint8Array(str)
+  let image: JimpInstance | null = null
   let width = 0
   let height = 0
 
@@ -50,7 +54,9 @@ export async function encode(str: string, { input }: EncodeOptions) {
       height,
     })
   }
-
+  if (!image) {
+    throw new Error('Invalid input')
+  }
   for (let i = 0; i < buffer.length; i++) {
     image.bitmap.data[i * 2] =
       ((image.bitmap.data[i * 2] ?? MASK_FF) & MASK_F0) +
@@ -63,10 +69,7 @@ export async function encode(str: string, { input }: EncodeOptions) {
     image.bitmap.data[i] = (image.bitmap.data[i] ?? MASK_FF) & MASK_F0
   }
   return {
-    data: image.bitmap.data,
-    async writeFile(path: string) {
-      return image.write(`${path}.png`)
-    },
+    image,
   }
 }
 
@@ -84,8 +87,5 @@ export async function decode(input: Input) {
   const data = textDecoder.decode(array)
   return {
     data,
-    writeFile(output: string) {
-      return writeFile(data, output)
-    },
   }
 }
