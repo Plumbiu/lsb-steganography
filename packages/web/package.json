@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "antd": "^5.26.1",
+    "file-type": "^21.0.0",
     "lsb-steganography": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

@@ -5,10 +5,11 @@ import { Button, Image, Radio } from 'antd'
 import InputFile from './components/InputFile'
 import TextArea from 'antd/es/input/TextArea'
 import { arrayBufferToBlobUrl, isArrayBuffer } from './utils'
+import Link from 'antd/es/typography/Link'
 
 function App() {
   const [inputType, setInputType] = useState<'text' | 'file'>('text')
-  const [decodedType, setDecodedType] = useState<'text' | 'file'>('text')
+  const [decodedType, setDecodedType] = useState<'text' | 'url'>('text')
   const [originBlobUrl, setOriginBlobUrl] = useState('')
   const [encodedBlobUrl, setEncodedBlobUrl] = useState('')
   const [decodedData, setDecodedData] = useState('')
@@ -17,13 +18,13 @@ function App() {
   const encodedOriginArrayBuffer = useRef<ArrayBuffer | null>(null)
   const inputRef = useRef<ArrayBuffer | string | null>(null)
 
-  const selectOriginImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectOriginImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onload = async (e) => {
         if (isArrayBuffer(e.target?.result)) {
-          const blobUrl = arrayBufferToBlobUrl(e.target.result)
+          const blobUrl = await arrayBufferToBlobUrl(e.target.result)
           setOriginBlobUrl(blobUrl)
           originArrayBuffer.current = e.target.result
         }
@@ -45,22 +46,8 @@ function App() {
         reader.readAsText(file)
         setDecodedType('text')
       } else if (inputType === 'file') {
-        // 图片文件
-        if (
-          file.type === 'image/png' ||
-          file.type === 'image/jpeg' ||
-          file.type === 'image/jpg' ||
-          file.type === 'image/gif' ||
-          file.type === 'image/bmp' ||
-          file.type === 'image/webp' ||
-          file.type === 'image/svg+xml'
-        ) {
-          reader.readAsArrayBuffer(file)
-          setDecodedType('file')
-        } else {
-          reader.readAsText(file)
-          setDecodedType('text')
-        }
+        reader.readAsArrayBuffer(file)
+        setDecodedType('url')
       }
     }
   }
@@ -71,7 +58,7 @@ function App() {
         input: originArrayBuffer.current,
       })
       encodedOriginArrayBuffer.current = await image.getBuffer('image/png')
-      const blobUrl = arrayBufferToBlobUrl(encodedOriginArrayBuffer.current)
+      const blobUrl = await arrayBufferToBlobUrl(encodedOriginArrayBuffer.current)
       setEncodedBlobUrl(blobUrl)
     }
   }
@@ -83,7 +70,7 @@ function App() {
         const textDecoder = new TextDecoder('utf-8')
         const text = textDecoder.decode(data)
         setDecodedData(text)
-      } else if (decodedType === 'file') {
+      } else if (decodedType === 'url') {
         const blob = new Blob([data.buffer], {
           type: 'application/octet-stream',
         })
@@ -155,13 +142,30 @@ function App() {
       </div>
       <div className={styles.decodeContainer}>
         <h2>Decode</h2>
-        <Button type="primary" onClick={handleDecode}>
-          Decode
-        </Button>
-        {decodedType === 'text' ? (
-          <pre>{decodedData}</pre>
-        ) : (
-          <div>{decodedData && <Image src={decodedData} />}</div>
+        <div>
+          <Button type="primary" onClick={handleDecode}>
+            Decode
+          </Button>
+        </div>
+        <div>
+          <h3>选择Decode类型</h3>
+          <Radio.Group
+            value={decodedType}
+            onChange={(e) => setDecodedType(e.target.value)}
+          >
+            <Radio value="text">文本</Radio>
+            <Radio value="url">下载</Radio>
+          </Radio.Group>
+        </div>
+        {decodedData && (
+          <div>
+            {decodedType === 'url' && (
+              <Link href={decodedData} target="_blank">
+                点击链接访问
+              </Link>
+            )}
+            {decodedType === 'text' && <pre>{decodedData}</pre>}
+          </div>
         )}
       </div>
     </div>

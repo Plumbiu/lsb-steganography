@@ -1,5 +1,10 @@
-export function arrayBufferToBlobUrl(arrayBuffer: ArrayBuffer) {
-  const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' })
+import { fileTypeFromBuffer } from 'file-type'
+
+export async function arrayBufferToBlobUrl(arrayBuffer: ArrayBuffer) {
+  const fileType = await fileTypeFromBuffer(arrayBuffer)
+
+  const mimeType = fileType?.mime || 'application/octet-stream'
+  const blob = new Blob([arrayBuffer], { type: mimeType })
   return URL.createObjectURL(blob)
 }
 
