@@ -1,20 +1,20 @@
 import { useRef, useState } from 'react'
 import { decode, encode } from 'lsb-steganography'
 import styles from './App.module.css'
-import { Button, Radio } from 'antd'
+import { Button, Image, Radio } from 'antd'
 import InputFile from './components/InputFile'
 import TextArea from 'antd/es/input/TextArea'
+import { arrayBufferToBlobUrl, isArrayBuffer } from './utils'
 
 function App() {
   const [inputType, setInputType] = useState<'text' | 'file'>('text')
   const [decodedType, setDecodedType] = useState<'text' | 'file'>('text')
-
-  const [originBase64, setOriginBase64] = useState('')
-  const [encodedBase64, setEncodedBase64] = useState('')
+  const [originBlobUrl, setOriginBlobUrl] = useState('')
+  const [encodedBlobUrl, setEncodedBlobUrl] = useState('')
   const [decodedData, setDecodedData] = useState('')
+
   const originArrayBuffer = useRef<ArrayBuffer | null>(null)
   const encodedOriginArrayBuffer = useRef<ArrayBuffer | null>(null)
-
   const inputRef = useRef<ArrayBuffer | string | null>(null)
 
   const selectOriginImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,10 +22,11 @@ function App() {
     if (file) {
       const reader = new FileReader()
       reader.onload = async (e) => {
-        const buffer = e.target?.result as ArrayBuffer
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
-        setOriginBase64(base64)
-        originArrayBuffer.current = buffer
+        if (isArrayBuffer(e.target?.result)) {
+          const blobUrl = arrayBufferToBlobUrl(e.target.result)
+          setOriginBlobUrl(blobUrl)
+          originArrayBuffer.current = e.target.result
+        }
       }
       reader.readAsArrayBuffer(file)
     }
@@ -70,8 +71,8 @@ function App() {
         input: originArrayBuffer.current,
       })
       encodedOriginArrayBuffer.current = await image.getBuffer('image/png')
-      const base64 = await image.getBase64('image/png')
-      setEncodedBase64(base64)
+      const blobUrl = arrayBufferToBlobUrl(encodedOriginArrayBuffer.current)
+      setEncodedBlobUrl(blobUrl)
     }
   }
 
@@ -93,31 +94,29 @@ function App() {
   }
 
   return (
-    <div>
+    <div className={styles.app}>
       <div className={styles.encodeContainer}>
-        <h2>Encode</h2>
+        <h1>Encode</h1>
         <div className={styles.imageContainer}>
           <div>
-            {originBase64 && (
+            {originBlobUrl && (
               <>
                 <div>源图片</div>
-                <img
-                  width={100}
-                  src={`data:image/png;base64,${originBase64}`}
-                />
+                <Image width={360} src={originBlobUrl} />
               </>
             )}
           </div>
           <div>
-            {encodedBase64 && (
+            {encodedBlobUrl && (
               <>
                 <div>加密图片</div>
-                <img width={100} src={encodedBase64} />
+                <Image width={360} src={encodedBlobUrl} />
               </>
             )}
           </div>
         </div>
         <div>
+          <h3>选择源图片</h3>
           <InputFile
             hidden
             placeholder="选择源图片"
@@ -125,6 +124,7 @@ function App() {
           />
         </div>
         <div>
+          <h3>选择加密数据</h3>
           <Radio.Group
             value={inputType}
             onChange={(e) => setInputType(e.target.value)}
@@ -136,6 +136,7 @@ function App() {
             {inputType === 'text' ? (
               <TextArea
                 placeholder="加密数据"
+                autoSize={{ minRows: 6, maxRows: 6 }}
                 onChange={(e) => (inputRef.current = e.target.value)}
               />
             ) : (
@@ -148,21 +149,19 @@ function App() {
         </div>
         <div>
           <Button type="primary" onClick={handleEncode}>
-            encode
+            Encode
           </Button>
         </div>
       </div>
-      <div>
+      <div className={styles.decodeContainer}>
         <h2>Decode</h2>
         <Button type="primary" onClick={handleDecode}>
-          decode
+          Decode
         </Button>
         {decodedType === 'text' ? (
           <pre>{decodedData}</pre>
         ) : (
-          <div>
-            <img width={100} src={decodedData} />
-          </div>
+          <div>{decodedData && <Image src={decodedData} />}</div>
         )}
       </div>
     </div>
