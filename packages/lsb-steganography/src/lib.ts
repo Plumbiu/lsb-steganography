@@ -17,7 +17,8 @@ export async function encode(
   image: JimpInstance
 }> {
   const textEncoder = new TextEncoder()
-  const buffer = typeof str === 'string' ? textEncoder.encode(str) : new Uint8Array(str)
+  const buffer =
+    typeof str === 'string' ? textEncoder.encode(str) : new Uint8Array(str)
   let image: JimpInstance | null = null
   let width = 0
   let height = 0
@@ -74,18 +75,16 @@ export async function encode(
 }
 
 export async function decode(input: Input) {
-  const textDecoder = new TextDecoder('utf-8')
   const jimpInput =
     typeof input === 'string'
       ? await Jimp.read(input)
       : await Jimp.fromBuffer(input)
   const buffer = jimpInput.bitmap.data
-  const array = new Uint8Array(buffer.length)
+  const array = new Uint8Array(Math.ceil(buffer.length / 2))
   for (let i = 0; i < buffer.length; i += 2) {
-    array[i] = ((buffer[i] & MASK_0F) << 4) + (buffer[i + 1] & MASK_0F)
+    array[i / 2] = ((buffer[i] & MASK_0F) << 4) + (buffer[i + 1] & MASK_0F)
   }
-  const data = textDecoder.decode(array)
   return {
-    data,
+    data: array,
   }
 }

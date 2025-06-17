@@ -31,7 +31,7 @@ function App() {
     }
   }
 
-  const selectInputData = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectInputFileData = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
 
     if (file) {
@@ -93,7 +93,7 @@ function App() {
   }
 
   return (
-    <>
+    <div>
       <div className={styles.encodeContainer}>
         <h2>Encode</h2>
         <div className={styles.imageContainer}>
@@ -141,7 +141,7 @@ function App() {
             ) : (
               <InputFile
                 placeholder="上传加密数据文件"
-                onChange={selectInputData}
+                onChange={selectInputFileData}
               />
             )}
           </div>
@@ -154,7 +154,9 @@ function App() {
       </div>
       <div>
         <h2>Decode</h2>
-        <button onClick={handleDecode}>decode</button>
+        <Button type="primary" onClick={handleDecode}>
+          decode
+        </Button>
         {decodedType === 'text' ? (
           <pre>{decodedData}</pre>
         ) : (
@@ -163,7 +165,7 @@ function App() {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }
 

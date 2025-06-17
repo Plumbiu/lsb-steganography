@@ -32,13 +32,13 @@ cli
   .option('--log', '仅打印，不保存源数据')
   .action(async (input, options) => {
     const { output, log } = options
-    const {data } = await decode(input)
+    const { data } = await decode(input)
     if (log) {
-      console.log(data)
+      const textDecoder = new TextDecoder('utf-8')
+      const text = textDecoder.decode(data)
+      console.log(text)
     } else {
-      await writeFile(output, data, {
-        encoding: 'utf-8',
-      })
+      await writeFile(output, data)
     }
   })
 

@@ -11,7 +11,7 @@
     "release": "pnpm -r release",
     "dev:web": "pnpm --filter web dev",
     "dev:core": "pnpm --filter lsb-steganography dev",
-    "dev": "npm-run-all --parallel dev:*"
+    "dev": "npm-run-all --parallel dev:web dev:core"
   },
   "bin": {
     "lsb": "./dist/cli.js"
