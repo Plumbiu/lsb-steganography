@@ -45,6 +45,9 @@ importers:
       antd:
         specifier: ^5.26.1
         version: 5.26.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      file-type:
+        specifier: ^21.0.0
+        version: 21.0.0
       lsb-steganography:
         specifier: workspace:*
         version: link:../lsb-steganography
@@ -721,6 +724,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@tokenizer/inflate@0.2.7':
+    resolution: {integrity: sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg==}
+    engines: {node: '>=18'}
+
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
 
@@ -965,9 +972,16 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
+
   file-type@16.5.4:
     resolution: {integrity: sha512-/yFHK0aGjFEgDJjEKP0pWCplsPFPhwyfwevf/pVxiN0tmE4L9LmwWxWukdJSHdoCli4VgQLehjJtwQBnqmsKcw==}
     engines: {node: '>=10'}
+
+  file-type@21.0.0:
+    resolution: {integrity: sha512-ek5xNX2YBYlXhiUXui3D/BXa3LdqPmoLJ7rqEx2bKJ7EAUEfmXgW0Das7Dc6Nr9MvqaOnIqiPV0mZk/r/UpNAg==}
+    engines: {node: '>=20'}
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -1491,6 +1505,10 @@ packages:
   strip-literal@3.0.0:
     resolution: {integrity: sha512-TcccoMhJOM3OebGhSBEmp3UZ2SfDMZUEBdRA/9ynfLi8yYajyWX3JiXArcJt4Umh4vISpspkQIY8ZZoCqjbviA==}
 
+  strtok3@10.3.1:
+    resolution: {integrity: sha512-3JWEZM6mfix/GCJBBUrkA8p2Id2pBkyTkVCJKto55w080QBKZ+8R171fGrbiSp+yMO/u6F8/yUh7K4V9K+YCnw==}
+    engines: {node: '>=18'}
+
   strtok3@6.3.0:
     resolution: {integrity: sha512-fZtbhtvI9I48xDSywd/somNqgUHl2L2cstmXCCif0itOf96jeW18MBSyrLuNicYQVkvpOxkZtkzujiTJ9LW5Jw==}
     engines: {node: '>=10'}
@@ -1537,6 +1555,10 @@ packages:
     resolution: {integrity: sha512-6udB24Q737UD/SDsKAHI9FCRP7Bqc9D/MQUV02ORQg5iskjtLJlZJNdN4kKtcdtwCeWIwIHDGaUsTsCCAa8sFQ==}
     engines: {node: '>=10'}
 
+  token-types@6.0.0:
+    resolution: {integrity: sha512-lbDrTLVsHhOMljPscd0yitpozq7Ga2M5Cvez5AjGg8GASBjtt6iERCAJ93yommPmz62fb45oFIXHEZ3u9bfJEA==}
+    engines: {node: '>=14.16'}
+
   tsdown@0.12.7:
     resolution: {integrity: sha512-VJjVaqJfIQuQwtOoeuEJMOJUf3MPDrfX0X7OUNx3nq5pQeuIl3h58tmdbM1IZcu8Dn2j8NQjLh+5TXa0yPb9zg==}
     engines: {node: '>=18.0.0'}
@@ -1566,6 +1588,10 @@ packages:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  uint8array-extras@1.4.0:
+    resolution: {integrity: sha512-ZPtzy0hu4cZjv3z5NW9gfKnNLjoz4y6uv4HlelAjDK7sY/xOkKZv9xK/WQpcsBB3jEybChz9DPC2U/+cusjJVQ==}
+    engines: {node: '>=18'}
 
   unconfig@7.3.2:
     resolution: {integrity: sha512-nqG5NNL2wFVGZ0NA/aCFw0oJ2pxSf1lwg4Z5ill8wd7K4KX/rQbHlwbh+bjctXL5Ly1xtzHenHGOK0b+lG6JVg==}
@@ -2342,6 +2368,14 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.43.0':
     optional: true
 
+  '@tokenizer/inflate@0.2.7':
+    dependencies:
+      debug: 4.4.1
+      fflate: 0.8.2
+      token-types: 6.0.0
+    transitivePeerDependencies:
+      - supports-color
+
   '@tokenizer/token@0.3.0': {}
 
   '@tybys/wasm-util@0.9.0':
@@ -2645,11 +2679,22 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
+  fflate@0.8.2: {}
+
   file-type@16.5.4:
     dependencies:
       readable-web-to-node-stream: 3.0.4
       strtok3: 6.3.0
       token-types: 4.2.1
+
+  file-type@21.0.0:
+    dependencies:
+      '@tokenizer/inflate': 0.2.7
+      strtok3: 10.3.1
+      token-types: 6.0.0
+      uint8array-extras: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
 
   fsevents@2.3.3:
     optional: true
@@ -3263,6 +3308,10 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
+  strtok3@10.3.1:
+    dependencies:
+      '@tokenizer/token': 0.3.0
+
   strtok3@6.3.0:
     dependencies:
       '@tokenizer/token': 0.3.0
@@ -3298,6 +3347,11 @@ snapshots:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
 
+  token-types@6.0.0:
+    dependencies:
+      '@tokenizer/token': 0.3.0
+      ieee754: 1.2.1
+
   tsdown@0.12.7(typescript@5.8.3):
     dependencies:
       ansis: 4.1.0
@@ -3325,6 +3379,8 @@ snapshots:
     optional: true
 
   typescript@5.8.3: {}
+
+  uint8array-extras@1.4.0: {}
 
   unconfig@7.3.2:
     dependencies:
